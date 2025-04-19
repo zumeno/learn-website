@@ -1,0 +1,16 @@
+{
+  "name": "learn-website",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "wrangler pages dev ./dist",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^5.7.4",
+    "cloudflare": "^4.2.0",
+    "wrangler": "^4.12.0"
+  }
+}
