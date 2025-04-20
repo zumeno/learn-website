@@ -1,0 +1,102 @@
+---
+interface Props {
+    title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="BioSnap - The better Linktree alternative" />
+		<meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+	</head>
+	<body>
+		<slot />
+	</body>
+</html>
+
+<style is:global>
+	:root {
+		--background-color: #0a0a0a;
+		--text-color: #e0e0e0;
+		--accent: 136, 58, 234;
+		--accent-light: 224, 204, 250;
+		--accent-dark: 49, 10, 101;
+		--accent-gradient: linear-gradient(
+			45deg,
+			rgb(var(--accent)),
+			rgb(var(--accent-light)) 30%,
+			white 60%
+		);
+		--primary: rgb(var(--accent));
+		--primary-dark: rgb(var(--accent-dark));
+		--secondary: rgb(var(--accent-light));
+	}
+
+	html {
+		font-family: 'Inter', system-ui, sans-serif;
+		background: var(--background-color);
+		color: var(--text-color);
+	}
+
+	code {
+		font-family:
+			Menlo,
+			Monaco,
+			Lucida Console,
+			Liberation Mono,
+			DejaVu Sans Mono,
+			Bitstream Vera Sans Mono,
+			Courier New,
+			monospace;
+		background: rgba(255, 255, 255, 0.1);
+		color: var(--text-color);
+		padding: 0.2em 0.4em;
+		border-radius: 4px;
+	}
+	
+	a {
+		color: var(--primary);
+		text-decoration: none;
+		transition: color 0.3s ease;
+	}
+
+	a:hover {
+		color: var(--secondary);
+	}
+
+	* {
+		box-sizing: border-box;
+	}
+
+	body {
+		margin: 0;
+		padding: 0;
+		min-height: 100vh;
+  }
+
+	.gradient-bg {
+		background: linear-gradient(
+			45deg,
+			rgba(10, 10, 10, 0.7),
+			rgba(30, 30, 30, 0.7)
+		);
+		border-radius: 8px;
+		padding: 20px;
+	}
+
+	@media (max-width: 768px) {
+		html {
+			font-size: 90%;
+		}
+	}
+</style>

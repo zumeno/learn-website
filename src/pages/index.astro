@@ -5,68 +5,40 @@ import '../styles/index.css';
 
 const features = [
   {
-    title: "AI-Powered Learning",
-    description: "Adaptive lessons that adjust to your learning style and pace",
+    title: "Smart Flashcard Generation",
+    description: "Automatically convert documents/PDFs into optimized flashcards",
     icon: "🧠"
   },
   {
-    title: "Interactive Courses",
-    description: "Hands-on projects and real-world applications",
+    title: "Instant Knowledge Answers",
+    description: "Get clear, accurate explanations for any concept you're learning",
     icon: "🖥️"
   },
   {
-    title: "Personalized Tutor",
-    description: "24/7 AI tutor that answers your questions instantly",
+    title: "AI-Powered Spaced Repetition",
+    description: "Our algorithm shows you flashcards at the perfect time for maximum retention",
     icon: "🤖"
   },
-  {
-    title: "Progress Tracking",
-    description: "Visual dashboards to monitor your learning journey",
-    icon: "📊"
-  }
-];
-
-const courses = [
-  {
-    title: "Machine Learning Fundamentals",
-    description: "Learn core concepts with Python",
-    category: "AI"
-  },
-  {
-    title: "Neural Networks Explained",
-    description: "From perceptrons to deep learning",
-    category: "Advanced"
-  },
-  {
-    title: "Data Science Basics",
-    description: "Pandas, NumPy and visualization",
-    category: "Beginner"
-  },
-  {
-    title: "Natural Language Processing",
-    description: "Build your first chatbot",
-    category: "Intermediate"
-  }
 ];
 ---
-<Layout title="Zumeno Learn - AI-Powered Learning Platform">
+<Layout title="Zumeno Learn - AI-Powered Learning Platform for Faster Mastery">
   <Banner />
   <section class="hero-banner">
     <div class="hero-content">
-      <h1>Learn Smarter with AI</h1>
-      <p class="subtitle">Zumeno Learn adapts to your unique learning style, helping you master complex topics faster than ever.</p>
+      <h1>Transform How You Learn with AI</h1>
+      <p class="subtitle">Turn study materials into smart flashcards and get instant answers - our AI helps you learn faster and remember longer</p>
       <div class="cta-buttons">
-        <a href="/signup" class="btn-primary btn-large">Start Learning Free</a>
-        <a href="/demo" class="btn-outline btn-large">See How It Works</a>
+        <a href="/signup" class="btn-primary btn-large">Get Started Free</a>
+        <a href="/demo" class="btn-outline btn-large">See Live Demo</a>
       </div>
     </div>
     <div class="hero-image demo-preview">
-      <img src="/learn-demo-screenshot.png" alt="Zumeno Learn interface preview" />
+      <img src="/learn-demo-screenshot.png" alt="Zumeno Learn interface preview showing flashcard creation" />
     </div>
   </section>
 
   <section id="features" class="features-section">
-    <h2>Why Learn with AI?</h2>
+    <h2>Supercharge Your Study Sessions</h2>
     <div class="features-grid">
       {features.map((feature) => (
         <div class="feature-card gradient-bg">
@@ -78,27 +50,11 @@ const courses = [
     </div>
   </section>
 
-  <section id="courses" class="popular-courses-section">
-    <h2>Popular Courses</h2>
-    <div class="courses-grid">
-      {courses.map((course) => (
-        <div class="course-card gradient-bg">
-          <img src={`/courses/${course.title.toLowerCase().replace(/\s+/g, '-')}.jpg`} 
-               alt={course.title} 
-               class="course-image" />
-          <h3>{course.title}</h3>
-          <p>{course.description}</p>
-          <span class="category-badge">{course.category}</span>
-        </div>
-      ))}
-    </div>
-  </section>
-
   <section class="cta-section gradient-bg">
-    <h2>Ready to Transform Your Learning?</h2>
-    <p>Join thousands accelerating their education with AI assistance.</p>
+    <h2>Join the Future of Learning Today</h2>
+    <p>Thousands of students and professionals are already accelerating their learning with Zumeno</p>
     <br><br>
-    <a href="/signup" class="btn-primary btn-large">Start Free Today</a>
+    <a href="/signup" class="btn-primary btn-large">Start Your Free Trial Now</a>
   </section>
 
   <footer class="footer gradient-bg">
@@ -108,13 +64,13 @@ const courses = [
     </div>
 
     <div class="footer-links">
-      <a href="/privacy" class="btn-outline">Privacy</a>
-      <a href="/terms" class="btn-outline">Terms</a>
-      <a href="/contact" class="btn-outline">Contact</a>
+      <a href="/privacy" class="btn-outline">Privacy Policy</a>
+      <a href="/terms" class="btn-outline">Terms of Service</a>
+      <a href="/contact" class="btn-outline">Contact Support</a>
     </div>
 
     <p class="copyright">
-      © <script>document.write(new Date().getFullYear())</script> Zumeno. Part of the Zumeno AI family.
+      © <script>document.write(new Date().getFullYear())</script> Zumeno. All rights reserved.
     </p>
   </footer>
 </Layout>

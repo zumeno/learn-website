@@ -1,0 +1,74 @@
+:root {
+  --primary: rgb(58, 138, 234);
+  --primary-dark: rgb(10, 70, 141);
+  --primary-light: rgba(58, 138, 234, 0.2);
+  --secondary: rgb(204, 228, 250);
+  --accent: var(--primary);
+  --accent-gradient: linear-gradient(45deg, var(--primary), #5c9df6);
+}
+
+.auth-form {
+  max-width: 400px;
+  margin: 4rem auto;
+  padding: 2rem;
+  background: var(--lighter); 
+  border-radius: 1rem;
+  color: var(--white);
+  border: 1px solid rgba(255, 255, 255, 0.1);  
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3); }
+
+.auth-form h1 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.auth-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.auth-form input {
+  padding: 0.75rem 1rem;
+  background: var(--light);
+  color: var(--white);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.auth-form input:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+.auth-form button {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  background: var(--primary);
+  color: var(--white);
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.auth-form button:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+#signup-message {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--gray);
+}

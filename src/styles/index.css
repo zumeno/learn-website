@@ -279,35 +279,8 @@ h2 {
   }
 }
 
-.courses-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
-
-.course-card {
-  padding: 1.5rem;
-  border-radius: 1.25rem;
-  transition: transform 0.2s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.course-card:hover {
-  transform: translateY(-5px);
-  border-color: var(--primary);
-}
-
-.course-image {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-}
-
 .demo-preview {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
+gh

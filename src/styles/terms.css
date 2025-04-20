@@ -1,0 +1,38 @@
+.content-section {
+  max-width: 800px;
+  margin: 4rem auto;
+  padding: 2rem;
+  background-color: #fefefe;
+  border-radius: 1rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+  font-family: 'Inter', sans-serif;
+  color: #2d2d2d;
+  line-height: 1.7;
+}
+
+.content-section h1 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #111;
+}
+
+.content-section h2 {
+  font-size: 1.3rem;
+  margin-top: 2rem;
+  color: #222;
+}
+
+.content-section p,
+.content-section li {
+  margin-bottom: 1rem;
+}
+
+.content-section ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+}
+
+.content-section a {
+  color: #0070f3;
+  text-decoration: underline;
+}

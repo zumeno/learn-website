@@ -1,0 +1,78 @@
+---
+import Layout from '../layouts/Layout.astro';
+import '../styles/pricing.css';
+
+const pricingPlans = [
+  {
+    name: "Starter",
+    price: "Free",
+    description: "Test out Zumeno Learn",
+    features: [
+      "Upto 3 flashcard decks",
+      "Upto 30 pages worth of AI help and flashcard generation a month",
+    ],
+    cta: "Get Started",
+    popular: false
+  },
+  {
+    name: "Pro",
+    price: "$9.99",
+    description: "Take full advantage of Zumeno Learn",
+    features: [
+      "Upto 10 flashcard decks",
+      "Upto 10,000 pages worth of AI help and flashcard generation a month",
+      "Share flashcard decks with friends",
+    ],
+    cta: "Get Started",
+    popular: true
+  },
+  {
+    name: "Ultimate",
+    price: "$49.99",
+    description: "Unlock the full potential of Zumeno Learn",
+    features: [
+      "Unlimited flashcard decks",
+      "100k pages worth of AI help and flashcard generation a month",
+      "Unlimited pages worth of flashcard generation and AI help a deck",
+      "Priority support",
+      "Access to exclusive updates",
+    ],
+    cta: "Get Started",
+    popular: false
+  }
+];
+---
+
+<Layout title="BioSnap - Pricing">
+  <main class="pricing-container">
+    <h1 class="pricing-title">Zumeno Learn Pricing</h1>
+    
+    <div class="pricing-grid">
+      {pricingPlans.map((plan) => (
+        <div class={`pricing-card ${plan.popular ? 'popular' : ''}`}>
+          <div class="card-header">
+            <h3>{plan.name}</h3>
+            {plan.popular && <span class="popular-badge">Popular</span>}
+          </div>
+          
+          <div class="card-price">
+            <span class="price">{plan.price}</span>
+          </div>
+          
+          <p class="card-description">{plan.description}</p>
+          
+          <ul class="card-features">
+            {plan.features.map((feature) => (
+              <li>{feature}</li>
+            ))}
+          </ul>
+          
+          <a href={plan.name === 'Enterprise' ? '/contact' : '/signup'} 
+             class={`card-button ${plan.popular ? 'primary' : 'outline'}`}>
+            {plan.cta}
+          </a>
+        </div>
+      ))}
+    </div>
+  </main>
+</Layout>

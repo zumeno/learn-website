@@ -1,0 +1,39 @@
+.content-section {
+  max-width: 800px;
+  margin: 4rem auto;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+  line-height: 1.75;
+}
+
+.content-section h1 {
+  font-size: 2.1rem;
+  margin-bottom: 1.5rem;
+  color: #1a1a1a;
+}
+
+.content-section h2 {
+  font-size: 1.4rem;
+  margin-top: 2rem;
+  color: #222;
+}
+
+.content-section p,
+.content-section li {
+  margin-bottom: 1rem;
+}
+
+.content-section ul {
+  margin-left: 1.5rem;
+  padding-left: 1rem;
+  list-style: disc;
+}
+
+.content-section a {
+  color: #0066cc;
+  text-decoration: underline;
+}
