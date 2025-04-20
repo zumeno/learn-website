@@ -1,0 +1,204 @@
+---
+import Layout from '../layouts/Layout.astro';
+import '../styles/verify.css';
+---
+
+<Layout title="Verify Your Email">
+  <section class="auth-form">
+    <h1>Verify Your Email</h1>
+    <p class="verification-instructions">We've sent a 6-digit verification code to your email address.</p>
+    
+    <form id="verification-form">
+      <input type="text" name="fullname" id="fullname" autocomplete="off" tabindex="-1" class="hidden-field">
+
+      <div class="verification-code-input">
+        <input type="text" name="digit1" maxlength="1" pattern="[0-9]" required />
+        <input type="text" name="digit2" maxlength="1" pattern="[0-9]" required />
+        <input type="text" name="digit3" maxlength="1" pattern="[0-9]" required />
+        <input type="text" name="digit4" maxlength="1" pattern="[0-9]" required />
+        <input type="text" name="digit5" maxlength="1" pattern="[0-9]" required />
+        <input type="text" name="digit6" maxlength="1" pattern="[0-9]" required />
+      </div>
+
+      <button type="submit">Verify Email</button>
+    </form>
+    
+    <div class="resend-code">
+      <a id="resend-code" style="cursor: pointer;">Resend Code</a>
+    </div>
+    
+    <p id="verification-message"></p>
+  </section>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('verification-form');
+      const message = document.getElementById('verification-message');
+      const inputs = form.querySelectorAll('input[type="text"]');
+      const resendBtn = document.getElementById('resend-code');
+      const changeEmailBtn = document.getElementById('change-email');
+      const honeypot = document.getElementById('fullname');
+      
+      honeypot.style.position = 'absolute';
+      honeypot.style.left = '-9999px';
+
+      message.textContent = sessionStorage.getItem('messageText');
+      message.style.color = sessionStorage.getItem('messageColor'); 
+
+      sessionStorage.removeItem('message');
+
+      inputs[0].focus();
+      
+      inputs.forEach((input, index) => {
+        input.addEventListener('input', (e) => {
+          if (e.target.value.length === 1) {
+            if (index < inputs.length - 1) {
+              inputs[index + 1].focus();
+            }
+          }
+        });
+        
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && e.target.value.length === 0) {
+            if (index > 0) {
+              inputs[index - 1].focus();
+            }
+          }
+        });
+      });
+      
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        let current_time = Math.floor(Date.now() / 1000);
+        const lastVerificationTime = sessionStorage.getItem('lastVerificationTime');
+        const timePassed = current_time - lastVerificationTime;
+        const waitTime = 10; 
+        const timeLeft = Math.ceil(waitTime - timePassed);
+
+        if (timePassed < waitTime) {
+          message.textContent = `Please wait ${timeLeft} more second${timeLeft !== 1 ? 's' : ''} before attempting verification again`;
+          message.style.color = '#FFC107';
+          return;
+        }
+
+        if (honeypot.value.length > 0) {
+          return; 
+        }
+        
+        const code = Array.from(inputs).map(input => input.value).join('');
+        
+        const action = sessionStorage.getItem('action') || 'signup';
+
+        try {
+          const response = await fetch('/api/verify', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              code, 
+              url: window.location.href,
+              action: action
+            })
+          });
+          
+          const result = await response.json();
+
+          current_time = Math.floor(Date.now() / 1000);
+          sessionStorage.setItem('lastVerificationTime', current_time);
+
+          if (response.status === 400) {
+            if (result.error == 'Invalid Verification Code')
+            {
+              sessionStorage.setItem('messageText', result.message);
+              sessionStorage.setItem('messageColor','#FFC107');
+              window.location.href = result.verificationURL;
+              return;
+            }
+            message.textContent = result.message;
+            message.style.color = '#FFC107';
+            return;
+          } else if (response.status === 410) {
+            message.textContent = result.message || 'Code expired';
+            message.style.color = '#F44336';
+            return;
+          } else if (response.status === 500) {
+            message.textContent = result.message || 'Verification failed'; 
+            message.style.color = '#F44336';
+            return;
+          }
+          
+          if (!response.ok) {
+            throw new Error(result.message || result.error || 'Verification failed');
+          }
+          
+          message.textContent = result.message;
+          message.style.color = '#4CAF50';
+
+          sessionStorage.removeItem('lastVerificationTime');
+          sessionStorage.removeItem('lastResendTime');
+
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 1500);
+
+        } catch (err) {
+          message.textContent = err.message;
+          message.style.color = '#B71C1C';
+        }
+      });
+      
+      resendBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+
+        let current_time = Math.floor(Date.now() / 1000);
+        const lastResendTime = sessionStorage.getItem('lastResendTime');
+        const timePassed = current_time - lastResendTime;
+        const waitTime = 60; 
+        const timeLeft = Math.ceil(waitTime - timePassed);
+
+        if (timePassed < waitTime) {
+          message.textContent = `Please wait ${timeLeft} more second${timeLeft !== 1 ? 's' : ''} before requesting a new verification email`;
+          message.style.color = '#FFC107';
+          return;
+        }
+
+        try {
+          const response = await fetch('/api/resend-verification', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              url: window.location.href 
+            })
+          });
+          
+          const result = await response.json();
+
+          current_time = Math.floor(Date.now() / 1000);
+          sessionStorage.setItem('lastResendTime', current_time);
+          
+          if (!response.ok) {
+            throw new Error(result.message || result.error || 'Failed to resend code');
+          }
+           
+          sessionStorage.setItem('messageText', result.message);
+          sessionStorage.setItem('messageColor', '#4CAF50');
+
+          window.location.href = result.verificationURL; 
+        } catch (err) {
+          message.textContent = err.message;
+          message.style.color = '#B71C1C';
+        }
+      });
+      
+      changeEmailBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = '/signup';
+      });
+    });
+  </script>
+</Layout>

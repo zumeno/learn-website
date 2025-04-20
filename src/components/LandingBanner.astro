@@ -1,0 +1,38 @@
+---
+import '../styles/banner.css';
+import { Image } from 'astro:assets';
+import sidebar_icon from '../assets/sidebar-icon.png';
+---
+
+<nav class="navbar gradient-bg">
+  <div class="logo-container">
+    <img src="/favicon.png" alt="BioSnap Logo" class="logo" />
+    <span class="logo-text">BioSnap</span>
+  </div>
+  <div class="nav-links">
+    <a href="/pricing" class="btn-outline">Pricing</a>
+    <a href="/login" class="btn-outline">Login</a>
+    <a href="/signup" class="btn-outline">Get Started</a>
+  </div>
+  <div class="sidebar">
+    <a href="/pricing" class="btn-outline">Pricing</a><br>
+    <a href="/login" class="btn-outline">Login</a><br>
+    <a href="/signup" class="btn-outline">Get Started</a>
+  </div>
+  <button class="toggle-sidebar"><Image src={sidebar_icon} alt="Menu" class="social-icon"></button> 
+</nav>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggleButton = document.querySelector('.toggle-sidebar');
+    const sidebar = document.querySelector('.sidebar');
+
+    if (toggleButton && sidebar) {
+      toggleButton.addEventListener('click', () => {
+        sidebar.classList.toggle('active');
+      });
+    } else {
+      console.warn('Toggle button or sidebar is not present in the DOM');
+    }
+  });
+</script>
