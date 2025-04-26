@@ -1,0 +1,85 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Banner from '../components/Banner.astro';
+import '../styles/billing.css';
+---
+
+<Layout title="Zumeno Learn - Billing">
+  <Banner />
+  <section class="billing-container">
+    <div class="billing-header">
+      <h2>Billing & Subscription</h2>
+      <p>Manage your subscription and payment methods</p>
+    </div>
+
+    <div class="billing-content">
+      <div class="current-plan card">
+        <h3>Your Current Plan</h3>
+        <div class="plan-details">
+          <div class="plan-name">
+            <h4>Premium</h4>
+            <span class="badge active">Active</span>
+          </div>
+          <p class="plan-description">Unlimited decks, advanced analytics, and priority support</p>
+          <div class="plan-price">
+            <span class="amount">$9.99</span>
+            <span class="period">/month</span>
+          </div>
+          <p class="renewal-date">Renews on <strong>June 15, 2024</strong></p>
+        </div>
+        <div class="plan-actions">
+          <button class="btn btn-outline">Change Plan</button>
+          <button class="btn btn-danger">Cancel Subscription</button>
+        </div>
+      </div>
+
+      <div class="payment-method card">
+        <div class="payment-header">
+          <h3>Payment Method</h3>
+          <button class="btn btn-text">Edit</button>
+        </div>
+        <div class="payment-details">
+          <div class="card-icon">💳</div>
+          <div class="card-info">
+            <p class="card-type">Visa ending in 4242</p>
+            <p class="card-expiry">Expires 04/2025</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="billing-history card">
+        <h3>Billing History</h3>
+        <div class="history-table">
+          <div class="table-header">
+            <span>Date</span>
+            <span>Description</span>
+            <span>Amount</span>
+            <span>Status</span>
+            <span>Receipt</span>
+          </div>
+          <div class="table-row">
+            <span>May 15, 2024</span>
+            <span>Premium Subscription</span>
+            <span>$9.99</span>
+            <span><span class="badge success">Paid</span></span>
+            <span><a href="#" class="btn btn-text">View</a></span>
+          </div>
+          <div class="table-row">
+            <span>April 15, 2024</span>
+            <span>Premium Subscription</span>
+            <span>$9.99</span>
+            <span><span class="badge success">Paid</span></span>
+            <span><a href="#" class="btn btn-text">View</a></span>
+          </div>
+          <div class="table-row">
+            <span>March 15, 2024</span>
+            <span>Premium Subscription</span>
+            <span>$9.99</span>
+            <span><span class="badge success">Paid</span></span>
+            <span><a href="#" class="btn btn-text">View</a></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

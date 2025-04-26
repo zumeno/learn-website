@@ -1,12 +1,3 @@
-:root {
-  --primary: rgb(58, 138, 234);
-  --primary-dark: rgb(10, 70, 141);
-  --primary-light: rgba(58, 138, 234, 0.2);
-  --secondary: rgb(204, 228, 250);
-  --accent: var(--primary);
-  --accent-gradient: linear-gradient(45deg, var(--primary), #5c9df6);
-}
-
 .pricing-container {
   max-width: 1200px;
   margin: 0 auto;

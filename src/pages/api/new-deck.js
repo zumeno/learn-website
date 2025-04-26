@@ -1,9 +1,8 @@
 export const prerender = false;
 import { createClient } from "@supabase/supabase-js";
-import { generateSecretKeyHash, generateCode, decryptCode } from "../../lib/generateCodes.js";
+import { generateSecretKeyHash, generateCode, decryptCode, verifyCode, extractEmailFromCode } from "../../lib/generateCodes.js";
 
 const email_secret = generateSecretKeyHash(import.meta.env.EMAIL_SECRET);
-const password_secret = generateSecretKeyHash(import.meta.env.PASSWORD_SECRET);
 
 export async function POST({ request }) {
   const origin = request.headers.get('origin');
@@ -24,10 +23,10 @@ export async function POST({ request }) {
   }
 
   const contentType = request.headers.get('content-type') || '';
-  if (!contentType.includes('application/json')) {
+  if (!contentType.includes('multipart/form-data')) {
     return new Response(JSON.stringify({ 
       error: 'Invalid content type',
-      message: 'Request must be JSON formatted'
+      message: 'Expected form data'
     }), {
       status: 415,
       headers: { 'Content-Type': 'application/json' }
@@ -37,29 +36,43 @@ export async function POST({ request }) {
   try {
     let requestBody;
     try {
-      requestBody = await request.json();
+      requestBody = await request.formData();
     } catch (e) {
       return new Response(JSON.stringify({ 
-        error: 'Invalid JSON',
-        message: 'The request body contains malformed JSON'
+        error: 'Invalid form data',
+        message: 'The request body contains invalid form data'
       }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    const email = requestBody.email;
-    const password = requestBody.password;
+    const title = requestBody.get('title');
+    const visibility = requestBody.get('visibility');
+    const emailCode = requestBody.get('emailCode');
+    const password = requestBody.get('password');
 
-    if (!email || !password) {
+    if (!title || !visibility || !emailCode || !pdf) {
       return new Response(JSON.stringify({ 
         error: 'Missing required fields',
-        message: 'Both email and password are required'
+        message: 'Missing required fields in form data'
       }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
     }
+
+    if (!verifyCode(email_secret, emailCode)) {
+      return new Response(JSON.stringify({ 
+        error: 'Invalid email code',
+        message: 'Invalid email code. Redirecting to login page...'
+      }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+  
+    const email = extractEmailFromCode(emailCode);
 
     const supabase = createClient(
       import.meta.env.SUPABASE_URL,
@@ -68,7 +81,7 @@ export async function POST({ request }) {
 
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
-      .select("email, encrypted_password") 
+      .select("email") 
       .eq("email", email)
       .maybeSingle();
 
@@ -85,28 +98,19 @@ export async function POST({ request }) {
     if (!profile) {
       return new Response(JSON.stringify({
         error: 'Authentication failed',
-        message: 'No account found with this email address.'
+        message: 'No account found with this email address. Redirecting to login page...'
       }), {
-        status: 401,
+        status: 403,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    const correctPassword = decryptCode(profile.encrypted_password, password_secret);
-
-    if (password != correctPassword) {
-      return new Response(JSON.stringify({
-        error: 'Authentication failed',
-        message: 'Incorrect password. Please try again.'
-      }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
+    // Code limits functionality
+    // Integrate AI part
+    // Supabase logic add
+      
     return new Response(JSON.stringify({ 
-      message: 'Login successful! Redirecting to dashboard...',
-      email: `${email}:${generateCode(email_secret, email)}`
+      message: 'Successfully created deck! Redirecting to your decks...',
     }), {
       status: 200,
       headers: { 

@@ -1,0 +1,166 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Banner from '../components/Banner.astro';
+import '../styles/new-deck.css';
+---
+
+<Layout title="Zumeno Learn - Create New Deck">
+  <Banner />
+  <section class="new-deck-container">
+    <div class="new-deck-header">
+      <h2>Create New Flashcard Deck</h2>
+      <a href="/decks" class="btn btn-outline">
+        ← Back to Decks
+      </a>
+    </div>
+
+    <form class="deck-form">
+      <div class="form-group">
+        <label for="deck-title">Deck Title</label>
+        <input 
+          type="text" 
+          id="deck-title" 
+          placeholder="e.g. Spanish Vocabulary" 
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Deck Visibility</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="visibility" value="private" checked />
+            <span>Private (only visible to me)</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="visibility" value="public" />
+            <span>Public (visible to everyone with the link)</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="document-upload">Upload Document</label>
+        <div class="file-upload">
+          <input 
+            type="file" 
+            id="document-upload" 
+            accept=".pdf, .docx"
+            class="file-input"
+          />
+          <label for="document-upload" class="file-label">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <span>Choose PDF/Docx file</span>
+          </label>
+          <div class="file-name" id="file-name">No file selected</div>
+        </div>
+        <p class="file-hint">We'll automatically generate flashcards from your PDF/Docx file</p>
+        
+        <div id="file-error" class="error-message"></div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary btn-large">
+            Create Deck
+          </button>
+        </div>
+      </div>
+    </form>
+  </section>
+</Layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const emailCode = localStorage.getItem('emailCode');
+
+    if (!emailCode) {
+      window.location.href = '/login';
+      return;
+    }
+
+    const fileInput = document.getElementById('document-upload');
+    const fileNameDisplay = document.getElementById('file-name');
+    const fileErrorDisplay = document.getElementById('file-error');
+    let fileSelected = false;
+
+    fileInput.addEventListener('change', (e) => {
+      if (fileInput.files.length > 0) {
+        const validExtensions = ['.pdf', '.docx'];
+        const fileName = fileInput.files[0].name;
+        const fileExtension = fileName.substring(fileName.lastIndexOf('.'));
+
+        if (!validExtensions.includes(fileExtension)) {
+          fileErrorDisplay.textContent = 'Invalid file type. Please upload a PDF or DOCX file.';
+          fileErrorDisplay.style.color = '#FFC107';
+          fileNameDisplay.textContent = 'Invalid file type';
+          fileNameDisplay.style.color = '#F44336';
+          return;
+        }
+        fileNameDisplay.textContent = fileInput.files[0].name;
+        fileNameDisplay.style.color = 'var(--white)';
+        fileSelected = true;
+      } else {
+        fileNameDisplay.textContent = 'No file selected';
+        fileNameDisplay.style.color = 'var(--gray)';
+        fileSelected = false;
+      }
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      if (!fileSelected) {
+        fileErrorDisplay.textContent = 'Document file is required for the creation of a flashcard deck.';
+        fileErrorDisplay.style.color = '#FFC107';
+        return;
+      } 
+      
+      const title = document.getElementById('deck-title').value;
+      const visibility = document.querySelector('input[name="visibility"]:checked').value;
+      const documentFile = fileInput.files[0];
+
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('visibility', visibility);
+      formData.append('emailCode', emailCode);
+      formData.append('pdf', documentFile);
+
+      try {
+        const response = await fetch('/api/new-deck', {
+          method: 'POST',
+          body: formData 
+        });
+
+        const result = await response.json();
+
+        if (response.status === 400) {
+          message.textContent = result.message;
+          message.style.color = '#FFC107';
+          return;
+        } else if (response.status === 500) {
+          message.textContent = result.message; 
+          message.style.color = '#F44336';
+          return;
+        }
+        
+        if (!response.ok) {
+          throw new Error(result.message || result.error || 'Failed to create new deck');
+        }
+
+        message.textContent = result.message;
+        message.style.color = '#4CAF50';
+
+        setTimeout(() => {
+          window.location.href = '/decks';
+        }, 1500);
+
+      } catch (error) {
+        message.textContent = err.message;
+        message.style.color = '#B71C1C';
+      }
+    });
+  });
+</script>

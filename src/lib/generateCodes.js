@@ -83,3 +83,34 @@ export function generateVerificationCode(verification_secret, email, password, c
    const code = parseInt(hmac.substring(0, 6), 16) % 1_000_000;
   return String(code).padStart(6, '0');
 }
+
+export function verifyCode(verification_secret, code) {
+  const firstColonIndex = code.indexOf(':');
+  
+  if (firstColonIndex === -1) {
+    return false;
+  }
+
+  const value = code.slice(0, firstColonIndex);             
+  const encryptedPart = code.slice(firstColonIndex + 1);
+  
+  try {
+    if (decryptCode(encryptedPart, verification_secret) !== value) {
+      return false;       
+    }
+  } catch (error) {
+    return false; 
+  }
+
+  return true;
+}
+
+export function extractEmailFromCode(code) {
+  const firstColonIndex = code.indexOf(':');
+  
+  if (firstColonIndex === -1) {
+    return null; 
+  }
+
+  return code.slice(0, firstColonIndex);
+}

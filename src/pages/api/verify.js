@@ -51,7 +51,11 @@ export async function POST({ request }) {
       });
     }
 
-    if (!requestBody.url) {
+    const url = requestBody.url;
+    const code = requestBody.code;
+    const action = requestBody.action;
+
+    if (!url) {
       return new Response(JSON.stringify({ 
         error: 'Missing URL',
         message: 'A valid URL is required to proceed with verification'
@@ -61,7 +65,7 @@ export async function POST({ request }) {
       });
     }
 
-    if (!requestBody.code) {
+    if (!code) {
       return new Response(JSON.stringify({ 
         error: 'Missing Code',
         message: 'The verification code is required'
@@ -71,7 +75,17 @@ export async function POST({ request }) {
       });
     }
 
-    if (!/^\d{6}$/.test(requestBody.code)) {
+    if (!action) {
+      return new Response(JSON.stringify({ 
+        error: 'Missing Action',
+        message: 'Action not specified.'
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    if (!/^\d{6}$/.test(code)) {
       return new Response(JSON.stringify({ 
         error: 'Invalid Code Format',
         message: 'Verification code must be exactly 6 digits'
@@ -81,7 +95,13 @@ export async function POST({ request }) {
       });
     }
 
-    const userData = decryptVerificationURL(requestBody.url, email_secret, password_secret, timestamp_secret, attempt_timestamp_secret);
+    const userData = decryptVerificationURL(url, email_secret, password_secret, timestamp_secret, attempt_timestamp_secret);
+
+    const email = userData.email;
+    const password = userData.password;
+    const timestamp = userData.timestamp;
+    const attemptTimestamp = userData.attemptTimestamp;
+
     if (!userData) {
       return new Response(JSON.stringify({ 
         error: 'Invalid Verification URL',
@@ -95,7 +115,7 @@ export async function POST({ request }) {
     let current_time = Math.floor(Date.now() / 1000);
     const current_time_string = String(current_time); 
 
-    const timePassed = current_time - userData.attemptTimestamp;
+    const timePassed = current_time - attemptTimestamp;
     const waitTime = 10; 
     const timeLeft = Math.ceil(waitTime - timePassed);
     
@@ -109,11 +129,11 @@ export async function POST({ request }) {
       });
     }
 
-    if (requestBody.code != generateVerificationCode(verification_secret, userData.email, userData.password, userData.timestamp)) {
+    if (code != generateVerificationCode(verification_secret, email, password, timestamp)) {
       return new Response(JSON.stringify({ 
         error: 'Invalid Verification Code',
         message: 'The verification code is incorrect',
-        verificationURL: generateVerificationURL(email_secret, userData.email, password_secret, userData.password, timestamp_secret, userData.timestamp, attempt_timestamp_secret, current_time_string)
+        verificationURL: generateVerificationURL(email_secret, email, password_secret, password, timestamp_secret, timestamp, attempt_timestamp_secret, current_time_string)
       }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
@@ -121,7 +141,7 @@ export async function POST({ request }) {
     }
 
     current_time = Math.floor(Date.now() / 1000);
-    if ((current_time - userData.timestamp) > (3 * 60 * 1000)) {
+    if ((current_time - timestamp) > (3 * 60 * 1000)) {
       return new Response(JSON.stringify({ 
         error: 'Expired Verification Code',
         message: 'The verification code has expired'
@@ -139,7 +159,7 @@ export async function POST({ request }) {
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("email")
-      .eq("email", requestBody.email)
+      .eq("email", email)
       .maybeSingle();
 
     if (profileError) {
@@ -152,7 +172,7 @@ export async function POST({ request }) {
       });
     }
 
-    if (profile && requestBody.action === 'signup') {
+    if (profile && action === 'signup') {
       return new Response(JSON.stringify({
         message: 'User already registered. Please log in.'
       }), {
@@ -163,22 +183,22 @@ export async function POST({ request }) {
 
     let success_message;
 
-    if (requestBody.action === 'signup') {
+    if (action === 'signup') {
       const { data: profiles, error: profileError } = await supabase
         .from('profiles')
         .insert({
-          email: userData.email,
-          encrypted_password: new URL(requestBody.url).searchParams.get('password')
+          email: email,
+          encrypted_password: new URL(url).searchParams.get('password')
         });
 
       success_message = 'Email verification successful! Redirecting to login...'
-    } else if (requestBody.action === 'reset') {
+    } else if (action === 'reset') {
       const { data: profiles, error: profileError } = await supabase
         .from('profiles')
         .update({
-          encrypted_password: new URL(requestBody.url).searchParams.get('password')
+          encrypted_password: new URL(url).searchParams.get('password')
         })
-        .eq('email', userData.email);
+        .eq('email', email);
 
       success_message = 'Password reset successful! Redirecting to login...' 
     } else {

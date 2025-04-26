@@ -76,7 +76,7 @@ import '../styles/login.css';
             throw new Error(result.message || result.error || 'Signup failed');
           }
 
-          localStorage.setItem('email', email);
+          localStorage.setItem('emailCode', result.emailCode);;
 
           setTimeout(() => {
             window.location.href = '/decks';

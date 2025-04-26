@@ -1,0 +1,41 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Banner from '../components/Banner.astro';
+import '../styles/decks.css';
+---
+
+<Layout title="Zumeno Learn - My Decks">
+  <Banner />
+  <section class="decks-container">
+    <div class="decks-header">
+      <h2>My Flashcard Decks</h2>
+      <a href="new-deck" class="btn btn-primary btn-large">
+        + Create New Deck
+      </a>
+    </div>
+
+    <div class="decks-grid">
+      <div class="deck-card">
+        <div class="deck-content">
+          <h3>Spanish Vocabulary</h3>
+          <p class="deck-stats">42 cards • Last studied 2 days ago</p>
+        </div>
+        <div class="deck-actions">
+          <a href="/decks/1/study" class="btn btn-primary">Study</a>
+          <a href="/decks/1/edit" class="btn btn-outline">Edit</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const emailCode = localStorage.getItem('emailCode');
+      
+      if (!emailCode) {
+        window.location.href = '/login';
+        return;
+      }
+    });
+</script>

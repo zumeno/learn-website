@@ -45,7 +45,7 @@ export async function POST({ request }) {
     });
   }
 
-    const contentType = request.headers.get('content-type') || '';
+  const contentType = request.headers.get('content-type') || '';
   if (!contentType.includes('application/json')) {
     return new Response(JSON.stringify({ 
       error: 'Invalid content type',
@@ -70,8 +70,10 @@ export async function POST({ request }) {
         headers: { 'Content-Type': 'application/json' }
       });
     }
+    
+    const url = requestBody.url;
 
-    if (!requestBody.url) {
+    if (!url) {
       return new Response(JSON.stringify({ 
         error: 'Missing URL',
         message: 'A valid URL is required to proceed with verification'
@@ -81,7 +83,11 @@ export async function POST({ request }) {
       });
     }
 
-    const userData = decryptVerificationURL(requestBody.url, email_secret, password_secret, timestamp_secret, attempt_timestamp_secret)
+    const userData = decryptVerificationURL(url, email_secret, password_secret, timestamp_secret, attempt_timestamp_secret)
+
+    const email = userData.email;
+    const password = userData.password;
+    const timestamp = userData.timestamp;
 
     if (!userData) {
       return new Response(JSON.stringify({ 
@@ -96,7 +102,7 @@ export async function POST({ request }) {
     const current_time = Math.floor(Date.now() / 1000);
     const current_time_string = String(current_time); 
 
-    const timePassed = current_time - userData.timestamp;
+    const timePassed = current_time - timestamp;
     const waitTime = 60; 
     const timeLeft = Math.ceil(waitTime - timePassed);
     
@@ -114,8 +120,8 @@ export async function POST({ request }) {
       emailPool, 
       verification_secret,
       product_name, 
-      userData.email,
-      userData.password,
+      email,
+      password,
       current_time_string 
     );
 
@@ -125,7 +131,7 @@ export async function POST({ request }) {
 
     return new Response(JSON.stringify({ 
       message: 'Verification code resent. Please check your email.',
-      verificationURL: generateVerificationURL(email_secret, userData.email, password_secret, userData.password, timestamp_secret, current_time_string, attempt_timestamp_secret, String(current_time - 10)),
+      verificationURL: generateVerificationURL(email_secret, email, password_secret, password, timestamp_secret, current_time_string, attempt_timestamp_secret, String(current_time - 10)),
     }), {
       status: 200,
       headers: { 

@@ -1,0 +1,162 @@
+.chatbot-container {
+  padding: 40px 5%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.chatbot-header {
+  margin-bottom: 40px;
+}
+
+.chatbot-header h2 {
+  margin-bottom: 10px;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.chatbot-header p {
+  color: var(--gray);
+  font-size: 1rem;
+}
+
+.chatbot-layout {
+  display: flex;
+  gap: 30px;
+}
+
+.deck-selection {
+  width: 300px;
+  flex-shrink: 0;
+}
+
+.deck-selection h3 {
+  color: var(--white);
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+}
+
+.deck-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.deck-option {
+  background: var(--light);
+  border-radius: 8px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.deck-option:hover {
+  border-color: var(--primary-light);
+}
+
+.deck-option.selected {
+  border-color: var(--primary);
+  background-color: var(--primary-light);
+}
+
+.deck-option h4 {
+  color: var(--white);
+  margin-bottom: 5px;
+  font-size: 1rem;
+}
+
+.deck-option p {
+  color: var(--gray);
+  font-size: 0.8rem;
+}
+
+.chat-interface {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--light);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.chat-messages {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-height: 60vh;
+}
+
+.message {
+  max-width: 80%;
+  width: fit-content;
+}
+
+.message-content {
+  padding: 12px 16px;
+  border-radius: 12px;
+}
+
+.user-message {
+  align-self: flex-end;
+}
+
+.user-message .message-content {
+  background-color: var(--primary);
+  color: white;
+  border-bottom-right-radius: 0;
+}
+
+.bot-message {
+  align-self: flex-start;
+}
+
+.bot-message .message-content {
+  background-color: var(--light);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom-left-radius: 0;
+}
+
+.chat-input {
+  display: flex;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.2);
+  gap: 10px;
+}
+
+.chat-input input {
+  flex-grow: 1;
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: none;
+  background: var(--light);
+  color: var(--white);
+}
+
+.chat-input button {
+  padding: 12px 20px;
+}
+
+@media (max-width: 768px) {
+  .chatbot-layout {
+    flex-direction: column;
+  }
+  
+  .deck-selection {
+    width: 100%;
+  }
+  
+  .deck-list {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 10px;
+  }
+  
+  .deck-option {
+    min-width: 200px;
+  }
+}

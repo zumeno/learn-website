@@ -1,0 +1,80 @@
+.decks-container {
+  padding: 40px 5%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.decks-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.decks-header h2 {
+  margin-bottom: 0;
+  text-align: left;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.decks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+.deck-card {
+  background: var(--light);
+  border-radius: 12px;
+  padding: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.deck-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.deck-content h3 {
+  color: var(--white);
+  margin-bottom: 10px;
+  font-size: 1.3rem;
+}
+
+.deck-stats {
+  color: var(--gray);
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+.deck-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.deck-actions .btn {
+  flex: 1;
+  text-align: center;
+  padding: 8px 12px;
+}
+
+@media (max-width: 768px) {
+  .decks-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .decks-header .btn {
+    width: 100%;
+  }
+}

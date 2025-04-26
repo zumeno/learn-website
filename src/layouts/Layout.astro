@@ -28,18 +28,17 @@ const { title } = Astro.props;
 	:root {
 		--background-color: #0a0a0a;
 		--text-color: #e0e0e0;
-		--accent: 136, 58, 234;
-		--accent-light: 224, 204, 250;
-		--accent-dark: 49, 10, 101;
-		--accent-gradient: linear-gradient(
-			45deg,
-			rgb(var(--accent)),
-			rgb(var(--accent-light)) 30%,
-			white 60%
-		);
-		--primary: rgb(var(--accent));
-		--primary-dark: rgb(var(--accent-dark));
-		--secondary: rgb(var(--accent-light));
+    --primary: rgb(58, 138, 234);
+    --primary-dark: rgb(10, 70, 141);
+    --primary-light: rgba(58, 138, 234, 0.2);
+    --secondary: rgb(204, 228, 250);
+    --accent: var(--primary);
+    --dark: #0a0a0a;
+    --light: #1a1a1a;
+    --lighter: #2a2a2a;
+    --gray: #6c757d;
+    --white: #e0e0e0;
+    --accent-gradient: linear-gradient(45deg, var(--primary), #5c9df6);
 	}
 
 	html {
@@ -99,4 +98,57 @@ const { title } = Astro.props;
 			font-size: 90%;
 		}
 	}
+
+  .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary {
+    background-color: var(--primary);
+    color: var(--white);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+  }
+
+  .btn-outline {
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    background-color: transparent;
+    padding: 0.6em 1.2em;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .btn-outline:hover {
+    background-color: var(--primary);
+    color: var(--white);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+  }
+
+  .btn-secondary {
+    background-color: var(--secondary);
+    color: var(--dark);
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--primary);
+    color: var(--white);
+  }
+
+  .btn-large {
+    padding: 12px 30px;
+    font-size: 1.1rem;
+  }
+
 </style>

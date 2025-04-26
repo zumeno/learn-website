@@ -1,0 +1,198 @@
+.billing-container {
+  padding: 40px 5%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.billing-header {
+  margin-bottom: 40px;
+}
+
+.billing-header h2 {
+  margin-bottom: 10px;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.billing-header p {
+  color: var(--gray);
+  font-size: 1rem;
+}
+
+.billing-content {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.card {
+  background: var(--light);
+  border-radius: 12px;
+  padding: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.current-plan h3,
+.payment-method h3,
+.billing-history h3 {
+  color: var(--white);
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+}
+
+.plan-details {
+  margin-bottom: 25px;
+}
+
+.plan-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.plan-name h4 {
+  color: var(--white);
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.badge.active {
+  background-color: rgba(46, 204, 113, 0.2);
+  color: #2ecc71;
+}
+
+.badge.success {
+  background-color: rgba(46, 204, 113, 0.2);
+  color: #2ecc71;
+}
+
+.plan-description {
+  color: var(--gray);
+  margin-bottom: 15px;
+}
+
+.plan-price {
+  margin-bottom: 15px;
+}
+
+.plan-price .amount {
+  color: var(--white);
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.plan-price .period {
+  color: var(--gray);
+  font-size: 1rem;
+}
+
+.renewal-date {
+  color: var(--gray);
+  font-size: 0.9rem;
+}
+
+.plan-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.btn-danger {
+  background-color: rgba(231, 76, 60, 0.2);
+  color: #e74c3c;
+  border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.btn-danger:hover {
+  background-color: rgba(231, 76, 60, 0.3);
+}
+
+.payment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.payment-details {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.card-icon {
+  font-size: 1.8rem;
+}
+
+.card-info p {
+  margin: 0;
+}
+
+.card-type {
+  color: var(--white);
+  font-weight: 500;
+}
+
+.card-expiry {
+  color: var(--gray);
+  font-size: 0.9rem;
+}
+
+.history-table {
+  display: flex;
+  flex-direction: column;
+}
+
+.table-header, .table-row {
+  display: grid;
+  grid-template-columns: 1.5fr 2fr 1fr 1fr 1fr;
+  padding: 15px 0;
+  align-items: center;
+}
+
+.table-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.table-header span {
+  color: var(--gray);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.table-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.table-row span {
+  color: var(--white);
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .table-header, .table-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  
+  .table-header span:nth-child(4),
+  .table-header span:nth-child(5),
+  .table-row span:nth-child(4),
+  .table-row span:nth-child(5) {
+    grid-column: span 1;
+    text-align: right;
+  }
+  
+  .plan-actions {
+    flex-direction: column;
+  }
+}

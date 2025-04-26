@@ -1,0 +1,62 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Banner from '../components/Banner.astro';
+import '../styles/chatbot.css';
+---
+
+<Layout title="Zumeno Learn - Chatbot">
+  <Banner />
+  <section class="chatbot-container">
+    <div class="chatbot-header">
+      <h2>Deck Chatbot</h2>
+      <p>Select a deck and ask questions about its content</p>
+    </div>
+
+    <div class="chatbot-layout">
+      <!-- Deck Selection Panel -->
+      <div class="deck-selection">
+        <h3>Select a Deck</h3>
+        <div class="deck-list">
+          <div class="deck-option selected">
+            <h4>Spanish Vocabulary</h4>
+            <p>42 cards</p>
+          </div>
+          <div class="deck-option">
+            <h4>Biology Terms</h4>
+            <p>78 cards</p>
+          </div>
+          <div class="deck-option">
+            <h4>History Dates</h4>
+            <p>35 cards</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Interface -->
+      <div class="chat-interface">
+        <div class="chat-messages">
+          <div class="message bot-message">
+            <div class="message-content">
+              <p>Hello! I'm your learning assistant. Ask me anything about the selected deck and I'll help you understand the concepts better.</p>
+            </div>
+          </div>
+          <div class="message user-message">
+            <div class="message-content">
+              <p>What's the Spanish word for "house"?</p>
+            </div>
+          </div>
+          <div class="message bot-message">
+            <div class="message-content">
+              <p>The Spanish word for "house" is "casa". Would you like me to use it in a sentence?</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-input">
+          <input type="text" placeholder="Ask a question about this deck..." />
+          <button class="btn btn-primary">Send</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

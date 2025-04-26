@@ -70,7 +70,10 @@ export async function POST({ request }) {
       });
     }
 
-    if (!requestBody.email || !requestBody.password) {
+    const email = requestBody.email;
+    const password = requestBody.password;
+
+    if (!email || !password) {
       return new Response(JSON.stringify({ 
         error: 'Missing required fields',
         message: 'Both email and password are required'
@@ -88,7 +91,7 @@ export async function POST({ request }) {
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("email")
-      .eq("email", requestBody.email)
+      .eq("email", email)
       .maybeSingle();
 
     if (profileError) {
@@ -117,8 +120,8 @@ export async function POST({ request }) {
       emailPool, 
       verification_secret,
       product_name, 
-      requestBody.email, 
-      requestBody.password,
+      email, 
+      password,
       current_time_string, 
     );
 
@@ -127,7 +130,7 @@ export async function POST({ request }) {
     }
 
     return new Response(JSON.stringify({ 
-      verificationURL: generateVerificationURL(email_secret, requestBody.email, password_secret, requestBody.password, timestamp_secret, current_time_string, attempt_timestamp_secret, String(current_time - 10))
+      verificationURL: generateVerificationURL(email_secret, email, password_secret, password, timestamp_secret, current_time_string, attempt_timestamp_secret, String(current_time - 10))
     }), {
       status: 200,
       headers: { 

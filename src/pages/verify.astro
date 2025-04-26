@@ -180,6 +180,16 @@ import '../styles/verify.css';
 
           current_time = Math.floor(Date.now() / 1000);
           sessionStorage.setItem('lastResendTime', current_time);
+
+          if (response.status === 400) {
+            message.textContent = result.message;
+            message.style.color = '#FFC107';
+            return;
+          } else if (response.status === 500) {
+            message.textContent = result.message; 
+            message.style.color = '#F44336';
+            return;
+          }
           
           if (!response.ok) {
             throw new Error(result.message || result.error || 'Failed to resend code');
