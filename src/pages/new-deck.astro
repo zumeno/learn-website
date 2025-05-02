@@ -77,7 +77,12 @@ import '../styles/new-deck.css';
     const emailCode = localStorage.getItem('emailCode');
 
     if (!emailCode) {
-      window.location.href = '/login';
+      message.textContent = "No email code found. Please log in again.";
+      message.style.color = '#B71C1C';
+
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 1500);
       return;
     }
 
@@ -135,6 +140,19 @@ import '../styles/new-deck.css';
         });
 
         const result = await response.json();
+        
+        if (result.redirect == '/login') {
+          localStorage.removeItem('emailCode');
+
+          message.textContent = result.message;
+          message.style.color = '#B71C1C';
+
+          setTimeout(() => {
+            window.location.href = result.redirect;
+          }, 1500);
+
+          return;
+        }
 
         if (response.status === 400) {
           message.textContent = result.message;

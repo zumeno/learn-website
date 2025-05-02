@@ -34,7 +34,12 @@ import '../styles/decks.css';
       const emailCode = localStorage.getItem('emailCode');
       
       if (!emailCode) {
-        window.location.href = '/login';
+        message.textContent = "No email code found. Please log in again.";
+        message.style.color = '#B71C1C';
+
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 1500);
         return;
       }
     });

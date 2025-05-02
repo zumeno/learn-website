@@ -65,7 +65,8 @@ export async function POST({ request }) {
     if (!verifyCode(email_secret, emailCode)) {
       return new Response(JSON.stringify({ 
         error: 'Invalid email code',
-        message: 'Invalid email code. Redirecting to login page...'
+        message: 'Invalid email code. Redirecting to login page...',
+        redirect: '/login'
       }), {
         status: 403,
         headers: { 'Content-Type': 'application/json' }
