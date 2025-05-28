@@ -1,6 +1,17 @@
 export const prerender = false;
-import { createClient } from "@supabase/supabase-js";
+import { Pool } from 'pg';
 import { generateSecretKeyHash, generateCode, decryptCode, generateVerificationURL, decryptVerificationURL, generateVerificationCode } from "../../lib/generateCodes.js";
+
+const pool = new Pool({
+  user: import.meta.env.DB_USER,
+  host: 'localhost', 
+  database: import.meta.env.DB_NAME,
+  password: import.meta.env.DB_PASSWORD,
+  port: 5432,
+  max: 100, 
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+});
 
 const verification_secret = generateSecretKeyHash(import.meta.env.VERIFICATION_SECRET);
 const email_secret = generateSecretKeyHash(import.meta.env.EMAIL_SECRET);
@@ -11,12 +22,19 @@ const attempt_timestamp_secret = generateSecretKeyHash(import.meta.env.ATTEMPT_T
 export async function POST({ request }) {
   const origin = request.headers.get('origin');
   const requestUrl = new URL(request.url);
-  const apiOrigin = `${requestUrl.protocol}//${requestUrl.host}`;
+
+  const getRootDomain = (hostname) => {
+    const parts = hostname.split('.');
+    return parts.slice(-2).join('.'); 
+  };
+
+  const apiRootDomain = getRootDomain(requestUrl.hostname);
+  const originRootDomain = origin ? getRootDomain(new URL(origin).hostname) : null;
     
-  if (origin && origin !== apiOrigin) {
+  if (origin && originRootDomain !== apiRootDomain) {
     return new Response(JSON.stringify({ 
-      error: 'Unauthorized origin',
-      message: 'Requests must come from the same origin'
+      error: 'forbidden',
+      message: 'Access Denied'
     }), {
       status: 403,
       headers: { 
@@ -151,64 +169,59 @@ export async function POST({ request }) {
       });
     }
 
-    const supabase = createClient(
-      import.meta.env.SUPABASE_URL,
-      import.meta.env.SUPABASE_SERVICE_ROLE_KEY
-    );
-
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("email")
-      .eq("email", email)
-      .maybeSingle();
-
-    if (profileError) {
-      return new Response(JSON.stringify({
-        error: 'Profile lookup failed',
-        message: profileError.message
-      }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-
-    if (profile && action === 'signup') {
-      return new Response(JSON.stringify({
-        message: 'User already registered. Please log in.'
-      }), {
-        status: 409,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    } 
-
     let success_message;
 
-    if (action === 'signup') {
-      const { data: profiles, error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          email: email,
-          encrypted_password: new URL(url).searchParams.get('password')
+    const client = await pool.connect();
+    try {
+      const profileQuery = 'SELECT email, encrypted_password FROM profiles WHERE email = $1';
+      const profileResult = await client.query(profileQuery, [email]);
+
+      if (profileResult.rows.length > 0 && action === 'signup') {
+        return new Response(JSON.stringify({
+          message: 'User already registered. Please log in.'
+        }), {
+          status: 409,
+          headers: { 'Content-Type': 'application/json' }
         });
+      } 
 
-      success_message = 'Email verification successful! Redirecting to login...'
-    } else if (action === 'reset') {
-      const { data: profiles, error: profileError } = await supabase
-        .from('profiles')
-        .update({
-          encrypted_password: new URL(url).searchParams.get('password')
-        })
-        .eq('email', email);
+      if (action === 'signup') {
+        const insertQuery = `
+          INSERT INTO profiles (email, encrypted_password)
+          VALUES ($1, $2)
+          RETURNING email, encrypted_password
+        `;
+        const insertResult = await client.query(insertQuery, [
+          email, 
+          new URL(url).searchParams.get('password')
+        ]);
 
-      success_message = 'Password reset successful! Redirecting to login...' 
-    } else {
-      return new Response(JSON.stringify({ 
-        error: 'Invalid Action',
-        message: 'Action must be either "signup" or "reset"'
-      }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
+        success_message = 'Email verification successful! Redirecting to login...'
+      } else if (action === 'reset') {
+        const updateQuery = `
+          UPDATE profiles
+          SET encrypted_password = $1
+          WHERE email = $2
+          RETURNING email, encrypted_password
+        `;
+        const updateResult = await client.query(updateQuery, [
+          new URL(url).searchParams.get('password'),
+          email
+        ]);
+
+        success_message = 'Password reset successful! Redirecting to login...' 
+      } else {
+        return new Response(JSON.stringify({ 
+          error: 'Invalid Action',
+          message: 'Action must be either "signup" or "reset"'
+        }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
+    } finally {
+      client.release();
     }
 
     return new Response(JSON.stringify({ 
@@ -242,9 +255,16 @@ export async function POST({ request }) {
 export async function OPTIONS({ request }) {
   const origin = request.headers.get('origin');
   const requestUrl = new URL(request.url);
-  const apiOrigin = `${requestUrl.protocol}//${requestUrl.host}`;
-  
-  const isAllowedOrigin = origin === apiOrigin;
+
+  const getRootDomain = (hostname) => {
+    const parts = hostname.split('.');
+    return parts.slice(-2).join('.'); 
+  };
+
+  const apiRootDomain = getRootDomain(requestUrl.hostname);
+  const originRootDomain = origin ? getRootDomain(new URL(origin).hostname) : null;
+
+  const isAllowedOrigin = originRootDomain === apiRootDomain;
   
   return new Response(null, {
     status: isAllowedOrigin ? 204 : 403,

@@ -1,7 +1,18 @@
 export const prerender = false;
-import { createClient } from "@supabase/supabase-js";
+import { Pool } from 'pg';
 import { generateSecretKeyHash, generateCode, generateVerificationURL } from "../../lib/generateCodes.js";
 import { sendVerificationEmail } from "../../lib/sendVerificationEmail.js";
+
+const pool = new Pool({
+  user: import.meta.env.DB_USER,
+  host: 'localhost', 
+  database: import.meta.env.DB_NAME,
+  password: import.meta.env.DB_PASSWORD,
+  port: 5432,
+  max: 100, 
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+});
 
 const product_name = import.meta.env.PRODUCT_NAME;
 const verification_secret = generateSecretKeyHash(import.meta.env.VERIFICATION_SECRET);
@@ -30,12 +41,19 @@ while (true) {
 export async function POST({ request }) {
   const origin = request.headers.get('origin');
   const requestUrl = new URL(request.url);
-  const apiOrigin = `${requestUrl.protocol}//${requestUrl.host}`;
+
+  const getRootDomain = (hostname) => {
+    const parts = hostname.split('.');
+    return parts.slice(-2).join('.'); 
+  };
+
+  const apiRootDomain = getRootDomain(requestUrl.hostname);
+  const originRootDomain = origin ? getRootDomain(new URL(origin).hostname) : null;
     
-  if (origin && origin !== apiOrigin) {
+  if (origin && originRootDomain !== apiRootDomain) {
     return new Response(JSON.stringify({ 
-      error: 'Unauthorized origin',
-      message: 'Requests must come from the same origin'
+      error: 'forbidden',
+      message: 'Access Denied'
     }), {
       status: 403,
       headers: { 
@@ -83,54 +101,60 @@ export async function POST({ request }) {
       });
     }
 
-    const supabase = createClient(
-      import.meta.env.SUPABASE_URL,
-      import.meta.env.SUPABASE_SERVICE_ROLE_KEY
-    );
+    let current_time;
+    let current_time_string;
 
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("email")
-      .eq("email", email)
-      .maybeSingle();
+    const client = await pool.connect();
+    try {
+      const profileQuery = `
+        SELECT EXISTS(
+          SELECT 1 FROM profiles 
+          WHERE LOWER(email) = LOWER($1)
+        ) as email_exists
+      `;
+      const profileResult = await client.query(profileQuery, [email]);
+      
+      if (profileResult.rows[0]?.email_exists) {
+        return new Response(JSON.stringify({
+          error: 'Email already registered',
+          message: 'User with the same email has already registered. Please log in.'
+        }), {
+          status: 409,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
 
-    if (profileError) {
-      return new Response(JSON.stringify({
-        error: 'Profile lookup failed',
-        message: profileError.message
-      }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
+      current_time = Math.floor(Date.now() / 1000);
+      current_time_string = String(current_time);
 
-    if (profile) {
-      return new Response(JSON.stringify({
-        message: 'User with the same email has already registered. Please log in.'
-      }), {
-        status: 409,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    } 
+      const { success } = await sendVerificationEmail(
+        emailPool, 
+        verification_secret,
+        product_name, 
+        email, 
+        password,
+        current_time_string, 
+      );
 
-    const current_time = Math.floor(Date.now() / 1000);
-    const current_time_string = String(current_time);
+      if (!success) {
+        throw new Error('Failed to send verification email');
+      }
 
-    const { success } = await sendVerificationEmail(
-      emailPool, 
-      verification_secret,
-      product_name, 
-      email, 
-      password,
-      current_time_string, 
-    );
-
-    if (!success) {
-      throw new Error('Failed to send verification email');
+    } finally {
+      client.release();
     }
 
     return new Response(JSON.stringify({ 
-      verificationURL: generateVerificationURL(email_secret, email, password_secret, password, timestamp_secret, current_time_string, attempt_timestamp_secret, String(current_time - 10))
+      verificationURL: generateVerificationURL(
+        email_secret, 
+        email, 
+        password_secret, 
+        password, 
+        timestamp_secret, 
+        current_time_string, 
+        attempt_timestamp_secret, 
+        String(current_time - 10)
+      )
     }), {
       status: 200,
       headers: { 
@@ -160,9 +184,16 @@ export async function POST({ request }) {
 export async function OPTIONS({ request }) {
   const origin = request.headers.get('origin');
   const requestUrl = new URL(request.url);
-  const apiOrigin = `${requestUrl.protocol}//${requestUrl.host}`;
-  
-  const isAllowedOrigin = origin === apiOrigin;
+
+  const getRootDomain = (hostname) => {
+    const parts = hostname.split('.');
+    return parts.slice(-2).join('.'); 
+  };
+
+  const apiRootDomain = getRootDomain(requestUrl.hostname);
+  const originRootDomain = origin ? getRootDomain(new URL(origin).hostname) : null;
+
+  const isAllowedOrigin = originRootDomain === apiRootDomain;
   
   return new Response(null, {
     status: isAllowedOrigin ? 204 : 403,
