@@ -148,12 +148,10 @@ export async function POST({ request }) {
     });
 
   } catch (error) {
-    console.error('Failed to Reset Password:', error);
+    console.error(error);
     
     return new Response(JSON.stringify({ 
-      error: 'Failed to Reset Password',
       message: error.message,
-      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
     }), {
       status: 500,
       headers: { 

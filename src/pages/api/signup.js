@@ -165,12 +165,10 @@ export async function POST({ request }) {
     });
 
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error(error);
     
     return new Response(JSON.stringify({ 
-      error: 'Registration failed',
       message: error.message,
-      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
     }), {
       status: 500,
       headers: { 
