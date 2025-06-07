@@ -101,6 +101,9 @@ export async function POST({ request }) {
       });
     }
 
+    let current_time;
+    let current_time_string;
+
     const client = await pool.connect();
     try {
       const profileQuery = 'SELECT email FROM profiles WHERE email = $1';
@@ -116,8 +119,8 @@ export async function POST({ request }) {
         });
       }
 
-      const current_time = Math.floor(Date.now() / 1000);
-      const current_time_string = String(current_time);
+      current_time = Math.floor(Date.now() / 1000);
+      current_time_string = String(current_time);
 
       const { success } = await sendVerificationEmail(
         emailPool, 
